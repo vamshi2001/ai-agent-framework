@@ -12,7 +12,7 @@ The framework is built to enable the development of **modular AI agents** that c
 * Execute plans and adapt to changing scenarios
 * Communicate with other agents or systems when needed
 
-Whether you're simulating intelligent behavior, automating complex workflows, or experimenting with cognitive architectures, Krishna AI Agent Framework provides the tools you need.
+Whether you're simulating intelligent behavior, automating complex workflows, or experimenting with cognitive architectures, AI Agent Framework provides the tools you need.
 
 ## 🔧 Key Features
 
