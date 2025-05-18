@@ -1,0 +1,40 @@
+{
+	"environment" : [
+		{
+			"name":"greetings",
+			"id" : 1,
+			"description":"greet user",
+			"isDefault":true,
+			"actions": [
+				{
+					"state": "if user already mentioned name",
+					"stateId" : 1,
+					"actionDescription" : "greet user with his/her name",
+					"beanName": "greet_user_and_ask_purpose",
+					"methodName" : "someMethod"
+				},
+				{
+					"state": "if user already mentioned name and mentioned purpose/need",
+					"stateId" : 2,
+					"actionDescription" : "greet user with his/her name and reslove user query or purpose",
+					"beanName": "greet_user_reslove_purpose",
+					"methodName" : "someMethod"
+				},
+				{
+					"state": "if user didn't mentioned name but mentioned purpose/need",
+					"stateId" : 3,
+					"actionDescription" : "apologise user and mention you cannot move forward with out his name",
+					"beanName": "apologise_user_and_ask_name_and_mention_user_name_mandatory",
+					"methodName" : "someMethod"
+				},
+				{
+					"state": "if user didn't mentioned name",
+					"stateId" : 4,
+					"actionDescription" : "greet user and ask user name",
+					"beanName": "apologise_user_and_ask_name",
+					"methodName" : "someMethod"
+				}
+			]
+		}
+	]	
+}
