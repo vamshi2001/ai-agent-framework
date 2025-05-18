@@ -1,7 +1,3 @@
-Absolutely! Here's a more natural, structured, and developer-friendly **README-style summary** of your error segment mapping — ideal for inclusion in your codebase, documentation, or dev onboarding guides.
-
----
-
 # 📘 Error Segment Categories
 
 This document defines standardized error **segments** used throughout our backend system to classify and handle errors more effectively. These segments are used across logs, exception handling, observability dashboards, and alerting mechanisms.
@@ -142,7 +138,3 @@ Or in logs:
 * 📊 **Segmented Monitoring Dashboards**
 * 🚨 **Smart Alert Routing**
 * 🧭 **Improved DevOps Workflow**
-
----
-
-Want this in Markdown, Swagger Docs, or API integration? Let me know, and I’ll generate the format you need!
