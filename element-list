@@ -1,0 +1,13 @@
+com.api.hub.ai
+com.api.hub.ai.cache
+com.api.hub.ai.cache.impl
+com.api.hub.ai.constants
+com.api.hub.ai.handler
+com.api.hub.ai.handler.impl
+com.api.hub.ai.pojo
+com.api.hub.ai.starter
+com.api.hub.ai.starter.impl
+com.api.hub.configuration.ai
+com.api.hub.configuration.db
+com.api.hub.exception
+com.api.hub.logging
