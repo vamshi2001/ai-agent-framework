@@ -11,13 +11,13 @@ import java.lang.annotation.*;
  * </p>
  * <p>
  * This annotation enables specification of:
+ * </p>
  * <ul>
  *   <li><b>variables</b>: Specifies the variable handler class or context used by the agent method, defaulting to {@code "SimpleCacheHandler"}.</li>
  *   <li><b>description</b>: Provides a human-readable description of the agent method’s purpose or behavior.</li>
  *   <li><b>goals</b>: Defines a list of goals or objectives the agent method aims to accomplish.</li>
  *   <li><b>agentPools</b>: Specifies one or more pools or groups the agent belongs to for logical categorization or execution management.</li>
  * </ul>
- * </p>
  * <p>
  * The annotated method is expected to accept a single parameter of type
  * {@link com.api.hub.ai.pojo.State State}, which encapsulates the current task,

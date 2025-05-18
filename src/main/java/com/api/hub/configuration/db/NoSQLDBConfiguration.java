@@ -39,7 +39,6 @@ import com.mongodb.client.MongoDatabase;
  * dynamic knowledge storage, fine-tuned prompts, chat memory, and real-time data logs —
  * are performed on a high-performance MongoDB cluster with well-optimized connection settings.</p>
  *
- * @author 
  * @since 1.0
  */
 @Configuration

@@ -53,7 +53,7 @@ import lombok.NonNull;
  * tailored to the specific goals and histories of an individual conversation or agent session.
  * </p>
  * 
- * @author AI Framework
+AI Framework
  */
 @Data
 public class EnvironmentState {

@@ -22,7 +22,7 @@ import com.api.hub.exception.InternalServerException;
 
 /**
  * The {@code StatelessEnvironmentHandler} is the default implementation of the AI Agent Framework's
- * {@link com.api.hub.ai.handler.impl.Environment} interface.
+ * {@link com.api.hub.ai.starter.Environment} interface.
  * <p>
  * This class processes incoming user inputs and delegates execution to appropriate agents using a stateless, pluggable architecture.
  * The handler works in a goal-task-action loop and manages agent selection, invocation, and action history tracking.
@@ -32,7 +32,7 @@ import com.api.hub.exception.InternalServerException;
  * The framework architecture follows the pattern:
  * <strong>StatelessEnvironmentHandler → EnvironmentLoader → Environment</strong>.
  * This design allows developers to provide their own implementation of the `process` method by
- * extending {@link com.api.hub.ai.handler.impl.EnvironmentLoader} and setting the property
+ * extending {@link com.api.hub.ai.starter.impl.EnvironmentLoader} and setting the property
  * <code>env.handler.default=false</code> in the application configuration.
  * </p>
  *
@@ -41,9 +41,9 @@ import com.api.hub.exception.InternalServerException;
  * <code>env.handler.default=true</code> is set.
  * </p>
  *
- * @author  
- * @see com.api.hub.ai.handler.impl.EnvironmentLoader
- * @see com.api.hub.ai.handler.impl.Environment
+ 
+ * @see com.api.hub.ai.starter.impl.EnvironmentLoader
+ * @see com.api.hub.ai.starter.Environment
  */
 
 @Component
@@ -60,6 +60,7 @@ public class StatelessEnvironmentHandler extends EnvironmentLoader{
      *
      * <p>
      * The method performs the following:
+     * </p>
      * <ul>
      *     <li>Fetches the {@link AgentPool} from the application context.</li>
      *     <li>Resolves the current {@link Goal} from the environment.</li>
@@ -68,7 +69,6 @@ public class StatelessEnvironmentHandler extends EnvironmentLoader{
      *     <li>Creates a {@link State} object, invokes the agent, and tracks all performed actions.</li>
      *     <li>Repeats the loop if agent signals continuation.</li>
      * </ul>
-     * </p>
      *
      * @param env The current {@link EnvironmentState}, containing goal queue, agent history, and configuration.
      * @param userResponse The user's textual input, which is wrapped into a task.

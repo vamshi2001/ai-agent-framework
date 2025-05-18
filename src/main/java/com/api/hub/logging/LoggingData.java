@@ -36,7 +36,7 @@ import lombok.Data;
  *   <li>Supports thread-local management via {@link LoggingDataHolder} for agent-contextual logging.</li>
  * </ul>
  * 
- * @author  
+ 
  * @see com.api.hub.ai.constants.MarkerConstants
  * @since 1.0
  */

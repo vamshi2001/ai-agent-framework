@@ -16,13 +16,11 @@ import com.api.hub.ai.handler.impl.EnvironmentState;
  *   <li>The {@code Environment} or agent implementation will inject an instance of this interface
  *       into the agent's {@link com.api.hub.ai.pojo.State} object before processing begins.</li>
  *   <li>Agents can use this handler to:</li>
- *   <ul>
  *     <li>Receive user input via {@link #setInput(String)}</li>
  *     <li>Send back output or responses using {@link #setOutPut(String)}</li>
  *     <li>Access the environment state through {@link #setState(EnvironmentState)}</li>
  *     <li>Report task/goal execution result using {@link #status(boolean)}</li>
  *     <li>Query execution status using {@link #isSuccess()}</li>
- *   </ul>
  * </ul>
  *
  * @see com.api.hub.ai.pojo.State

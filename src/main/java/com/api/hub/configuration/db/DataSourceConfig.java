@@ -29,6 +29,7 @@ import jakarta.persistence.EntityManagerFactory;
  *
  * <p>
  * Required properties to be set in `application.properties`:
+ * </p>
  * <pre>
  * # Enable/Disable SQL DB configuration
  * sql.db.enable=true
@@ -60,14 +61,13 @@ import jakarta.persistence.EntityManagerFactory;
  * db.test-on-borrow=true
  * db.validation-query=SELECT 1
  * </pre>
- * </p>
  *
  * <p>
  * This configuration is activated only if `sql.db.enable=true`.
  * The other components are conditionally loaded based on their respective flags.
  * </p>
  *
- * @author Ai-Agent
+Ai-Agent
  */
 @Configuration
 @EnableTransactionManagement

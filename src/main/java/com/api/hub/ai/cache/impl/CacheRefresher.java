@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * A scheduled component responsible for managing and refreshing multiple cache instances
- * within the AI-Agent Execution & Orchestration Platform.
+ * within the AI-Agent Execution and Orchestration Platform.
  * 
  * <p>
  * This class maintains a registry of caches implementing {@link CacheOperations} interface
@@ -33,20 +33,22 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * <p>
  * This class is enabled conditionally via Spring properties:
+ * </p>
  * <ul>
  *   <li><code>cache.enabled=true</code></li>
  *   <li><code>cache.default.refresher.enabled=true</code></li>
  * </ul>
+ * <p>
  * If these properties are not set, the refresher will not be initialized.
  * </p>
  * 
  * <p>
  * Configuration properties:
+ * </p>
  * <ul>
  *   <li><code>cache.min.refreshTime.ms</code> - minimum time in milliseconds between successive refreshes for a cache (default: 5000 ms)</li>
  *   <li><code>cache.refreshTime.sec</code> - interval in seconds at which the scheduled refresh runs (default: 300 seconds)</li>
  * </ul>
- * </p>
  * 
  * <p>
  * Typical usage involves calling {@link #registerCache(CacheOperations)} during cache initialization

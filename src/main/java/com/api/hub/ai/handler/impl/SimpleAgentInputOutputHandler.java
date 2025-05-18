@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  *   <li>Tracks whether the agent successfully completed its operation</li>
  * </ul>
  *
- * @author 
+
  * @since 1.0
  * @see InputOutputHandler
  * @see EnvironmentState

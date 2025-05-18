@@ -2,7 +2,7 @@ package com.api.hub.ai.cache;
 
 /**
  * Cache interface designed for fast in-memory access and modular extension
- * within the Enterprise AI Agent Execution & Orchestration Platform.
+ * within the Enterprise AI Agent Execution and Orchestration Platform.
  * <p>
  * This interface provides basic cache operations and acts as the primary
  * abstraction used by agent-level or environment-level logic to store,

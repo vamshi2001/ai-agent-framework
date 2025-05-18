@@ -40,7 +40,7 @@ package com.api.hub.exception;
  * }</pre>
  *
  * @see ApiHubException
- * @author 
+
  * @since 1.0
  */
 public class InputException extends ApiHubException {

@@ -10,7 +10,7 @@ import com.api.hub.ai.handler.impl.EnvironmentState;
 
 /**
  * Configuration class for cache initialization in the
- * Enterprise AI Agent Execution & Orchestration Platform.
+ * Enterprise AI Agent Execution and Orchestration Platform.
  *
  * <p>
  * This configuration dynamically registers cache beans based on property-driven conditions.

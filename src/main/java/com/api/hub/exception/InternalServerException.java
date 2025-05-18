@@ -34,7 +34,7 @@ package com.api.hub.exception;
  * }
  * }</pre>
  *
- * @author 
+
  * @since 1.0
  * @see ApiHubException
  */

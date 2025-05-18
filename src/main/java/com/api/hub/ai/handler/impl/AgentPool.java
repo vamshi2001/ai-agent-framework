@@ -28,7 +28,7 @@ import com.api.hub.exception.InputException;
  *
  * <p><b>Usage:</b> Extend this class and define custom agent-matching logic based on your use case.</p>
  *
- * @author 
+
  */
 public abstract class AgentPool {
 

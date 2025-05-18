@@ -34,7 +34,7 @@ package com.api.hub.logging;
  * especially in distributed and asynchronous AI-agent workflows.</p>
  *
  * @see LoggingData
- * @author 
+
  * @since 1.0
  */
 public class LoggingDataHolder {

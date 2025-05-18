@@ -2,7 +2,7 @@ package com.api.hub.ai.cache;
 
 /**
  * Defines operations for synchronizing cache data with an underlying
- * persistent or distributed cache source in the AI-Agent Execution & Orchestration Platform.
+ * persistent or distributed cache source in the AI-Agent Execution and Orchestration Platform.
  * 
  * <p>
  * This interface separates the responsibilities of the low-level cache
@@ -13,6 +13,7 @@ package com.api.hub.ai.cache;
  * 
  * <p>
  * Implementations of this interface are responsible for:
+ * </p>
  * <ul>
  *   <li>Loading data from the source cache system into memory.</li>
  *   <li>Writing updates back to the source cache or persistent store.</li>
@@ -21,7 +22,6 @@ package com.api.hub.ai.cache;
  *   <li>Maintaining timestamps for the last refresh to optimize sync frequency.</li>
  *   <li>Notifying handlers about changes to specific cache keys.</li>
  * </ul>
- * </p>
  * 
  * <p>
  * Within the AI-agent framework, the cache synchronization mechanism ensures

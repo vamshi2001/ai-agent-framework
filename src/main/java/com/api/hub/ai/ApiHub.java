@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * <p>Logging is enabled to confirm the successful launch of the application.</p>
  * 
- * @author API Hub Team
+API Hub Team
  */
 @SpringBootApplication
 @Slf4j

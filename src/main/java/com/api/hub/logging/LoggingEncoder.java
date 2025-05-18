@@ -38,7 +38,7 @@ import ch.qos.logback.core.encoder.EncoderBase;
  * @see LoggingDataHolder
  * @see LoggingData
  * @see ch.qos.logback.core.encoder.EncoderBase
- * @author 
+
  * @since 1.0
  */
 public class LoggingEncoder extends EncoderBase<ILoggingEvent> {

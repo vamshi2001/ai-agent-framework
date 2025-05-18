@@ -30,16 +30,16 @@ import com.api.hub.ai.starter.AiAgent;
  * facilitating modular agent development and management within the framework.
  * </p>
  *
- * <h3>Key Responsibilities:</h3>
+ * <h2>Key Responsibilities:</h2>
  * <ul>
  *   <li>Detect Spring beans implementing the {@link AiAgent} interface.</li>
  *   <li>Scan such beans for methods annotated with {@link Agent}.</li>
  *   <li>For each annotated method, create an {@link AgentDefination} containing:</li>
- *   <ul>
+ *   
  *       <li>Agent name (combining bean name and method name)</li>
  *       <li>Description, goals, and method reference from the annotation</li>
  *       <li>Reference to the bean instance as the agent handler</li>
- *   </ul>
+ *   
  *   <li>Group agent definitions into pools as defined by the {@code agentPools} attribute of the annotation.</li>
  *   <li>Provide a static method to retrieve agents by pool name.</li>
  * </ul>

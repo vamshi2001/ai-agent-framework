@@ -9,7 +9,7 @@ import com.api.hub.ai.cache.CacheOperations;
 /**
  * Abstract base class providing an in-memory cache implementation combining
  * both {@link Cache} and {@link CacheOperations} interfaces for the AI-Agent
- * Execution & Orchestration Platform.
+ * Execution and Orchestration Platform.
  * 
  * <p>
  * This class maintains cache entries in a {@link HashMap} stored in RAM for
