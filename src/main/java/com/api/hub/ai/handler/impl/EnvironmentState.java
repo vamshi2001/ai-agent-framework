@@ -56,7 +56,7 @@ import lombok.NonNull;
 AI Framework
  */
 @Data
-public class EnvironmentState {
+public class EnvironmentState implements AutoCloseable{
 
 	public EnvironmentState(@NonNull String name, @NonNull List<Goal> goals,
 			@NonNull Cache<String, AgentHistory> agentLevelHistory, @NonNull Cache<String, String> envLevelHistory,
@@ -65,7 +65,8 @@ public class EnvironmentState {
 		super();
 		this.name = name;
 		this.goals = goals;
-		this.agentLevelHistory = agentLevelHistory;
+		this.
+		agentLevelHistory = agentLevelHistory;
 		this.envLevelHistory = envLevelHistory;
 		this.variables = variables;
 		this.agentpool = agentpool;
@@ -168,6 +169,21 @@ public class EnvironmentState {
         }
         return goal;
     }
+    
+    public volatile boolean closed = false;
+    
+    @Override
+    public void close() {
+    	goals.clear();
+    	goalQueue.clear();
+    	agentLevelHistory.close();
+    	envLevelHistory.close();
+		variables.close();
+		agentpool = null;
+		env = null;
+		executer.shutdownNow();
+    }
+    
 
     /**
      * Retrieves the default goal defined in this environment.

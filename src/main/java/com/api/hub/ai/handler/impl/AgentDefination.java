@@ -79,7 +79,7 @@ public class AgentDefination {
     public boolean invokeAgent(State state) throws ApiHubException {
         try {
             methodToInvoke.setAccessible(true);
-            return (boolean) methodToInvoke.invoke(agentHandler, new Object[] { state });
+            return (boolean) methodToInvoke.invoke(agentHandler, new Object[] { state , variables});
         } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new InputException("1001-ai-hub", "unable to invoke agent " + e.getMessage(), "");
         } catch (Exception e) {

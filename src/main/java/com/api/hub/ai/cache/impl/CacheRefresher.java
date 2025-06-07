@@ -85,6 +85,10 @@ public class CacheRefresher implements MarkerConstants {
     public void registerCache(@NonNull CacheOperations<?,?> cache) {
         cacheList.add(cache);
     }
+    
+    public void removeCache(@NonNull CacheOperations<?,?> cache) {
+        cacheList.remove(cache);
+    }
 
     /**
      * Scheduled method triggered periodically based on the configured fixed delay (default 300 seconds).

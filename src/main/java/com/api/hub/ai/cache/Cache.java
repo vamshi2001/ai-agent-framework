@@ -63,4 +63,6 @@ public interface Cache<K, V> {
      * @return {@code true} if the key existed and was removed, {@code false} otherwise
      */
     boolean delete(K key);
+    
+    boolean close();
 }

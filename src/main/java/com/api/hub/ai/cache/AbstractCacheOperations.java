@@ -56,4 +56,12 @@ public abstract class AbstractCacheOperations<K,V> extends InMemoryCache<K,V> {
 		
 		return lastRefreshTime;
 	}
+	
+	@Override
+	public boolean close() {
+		refresher.removeCache(this);
+		data.clear();
+		return true;
+	}
+	
 }

@@ -83,4 +83,32 @@ public abstract class ApiHubException extends Exception {
     public String getStacktrace() {
         return stackTrace;
     }
+
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public String getExceptionMsg() {
+		return exceptionMsg;
+	}
+
+	public void setExceptionMsg(String exceptionMsg) {
+		this.exceptionMsg = exceptionMsg;
+	}
+
+	public String getMsgToUser() {
+		return msgToUser;
+	}
+
+	public void setMsgToUser(String msgToUser) {
+		this.msgToUser = msgToUser;
+	}
+
+	public void setStackTrace(String stackTrace) {
+		this.stackTrace = stackTrace;
+	}
 }

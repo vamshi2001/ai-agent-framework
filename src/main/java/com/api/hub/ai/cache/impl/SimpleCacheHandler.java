@@ -41,10 +41,7 @@ import com.api.hub.ai.cache.AbstractCacheOperations;
  */
 @Component("SimpleCacheHandler")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-@ConditionalOnProperty(
-    name = "cache.enabled",
-    havingValue = "true"
-)
+@ConditionalOnProperty(name = "cache.enabled", havingValue = "true")
 public class SimpleCacheHandler<K, V> extends AbstractCacheOperations<K,V> {
 
 	/**
