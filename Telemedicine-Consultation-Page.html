@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediConnect - Telemedicine Platform</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#2B6CB0',secondary:'#48BB78'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+        .appointment-card:hover .appointment-actions {
+            opacity: 1;
+        }
+        .appointment-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #2B6CB0;
+            border-color: #2B6CB0;
+        }
+        input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            top: 2px;
+            left: 6px;
+            transform: rotate(45deg);
+        }
+        .custom-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+        .custom-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .switch-slider {
+            background-color: #2B6CB0;
+        }
+        input:checked + .switch-slider:before {
+            transform: translateX(22px);
+        }
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #e2e8f0;
+            outline: none;
+        }
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2B6CB0;
+            cursor: pointer;
+        }
+        .range-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2B6CB0;
+            cursor: pointer;
+            border: none;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 50;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .dropdown-content.show {
+            display: block;
+        }
+        .calendar-day {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .calendar-day:hover {
+            background-color: #EBF8FF;
+        }
+        .calendar-day.selected {
+            background-color: #2B6CB0;
+            color: white;
+        }
+        .calendar-day.available {
+            border: 1px dashed #2B6CB0;
+        }
+        .time-slot {
+            padding: 6px 12px;
+            border-radius: 16px;
+            background-color: #EBF8FF;
+            color: #2B6CB0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .time-slot:hover {
+            background-color: #2B6CB0;
+            color: white;
+        }
+        .time-slot.selected {
+            background-color: #2B6CB0;
+            color: white;
+        }
+        .doctor-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .star {
+            cursor: pointer;
+            color: #CBD5E0;
+        }
+        .star.filled {
+            color: #F6AD55;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <h1 class="text-2xl font-['Pacifico'] text-primary mr-10">logo</h1>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="text-primary font-semibold">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-primary">Find Doctors</a>
+                    <a href="#" class="text-gray-600 hover:text-primary">My Appointments</a>
+                    <a href="#" class="text-gray-600 hover:text-primary">Health Records</a>
+                    <a href="#" class="text-gray-600 hover:text-primary">Second Opinions</a>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="bg-primary text-white px-4 py-2 rounded-button font-semibold shadow-sm hover:bg-primary/90 whitespace-nowrap">
+                    Connect Now
+                </button>
+                <div class="relative">
+                    <div class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary cursor-pointer">
+                        <i class="ri-notification-3-line ri-lg"></i>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">3</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 cursor-pointer">
+                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white">
+                        <span class="font-semibold">JD</span>
+                    </div>
+                    <span class="hidden md:block text-gray-700">John Doe</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+            <div class="flex flex-col md:flex-row">
+                <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Virtual Care, Real Results</h2>
+                    <p class="text-gray-600 mb-6">Connect with top medical specialists from the comfort of your home. Get diagnosed, treated, and feel better faster.</p>
+                    <div class="mb-8">
+                        <button class="bg-primary text-white px-6 py-3 rounded-button font-semibold text-lg shadow-md hover:bg-primary/90 flex items-center whitespace-nowrap">
+                            <i class="ri-video-chat-line ri-lg mr-2"></i>
+                            Start Instant Consultation
+                        </button>
+                        <div class="flex items-center mt-4 text-sm text-gray-600">
+                            <div class="flex items-center mr-6">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                <span>42 doctors available now</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="ri-time-line ri-lg mr-2 text-primary"></i>
+                                <span>Connect in <strong>&lt;5 minutes</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <div class="flex flex-col items-center">
+                            <span class="text-2xl font-bold text-primary">1,200+</span>
+                            <span class="text-sm text-gray-500">Verified Doctors</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-2xl font-bold text-primary">24/7</span>
+                            <span class="text-sm text-gray-500">Availability</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-2xl font-bold text-primary">98%</span>
+                            <span class="text-sm text-gray-500">Satisfaction Rate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 bg-cover bg-center" style="background-image: url('https://readdy.ai/api/search-image?query=A%20professional%20medical%20scene%20with%20a%20female%20doctor%20in%20white%20coat%20having%20a%20video%20call%20consultation%20with%20a%20patient%20on%20a%20laptop.%20The%20doctor%20is%20smiling%20and%20looking%20engaged.%20The%20background%20shows%20a%20clean%2C%20modern%20medical%20office%20with%20soft%20blue%20accents.%20The%20image%20has%20a%20bright%2C%20optimistic%20feel%20with%20natural%20lighting.&width=800&height=600&seq=1&orientation=landscape');">
+                </div>
+            </div>
+        </section>
+
+        <!-- Specialist Search & Filters -->
+        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Find the Right Specialist</h3>
+            
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="ri-search-line text-gray-400"></i>
+                    </div>
+                    <input type="text" placeholder="Search by specialty, condition, or doctor name" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                </div>
+                <button class="bg-primary text-white px-6 py-3 rounded-button font-semibold shadow-sm hover:bg-primary/90 whitespace-nowrap">
+                    Search
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="relative">
+                    <div class="w-full border border-gray-300 rounded-lg p-3 flex justify-between items-center cursor-pointer" id="specialtyDropdown">
+                        <span class="text-gray-700">Specialty</span>
+                        <i class="ri-arrow-down-s-line text-gray-500"></i>
+                    </div>
+                    <div class="dropdown-content" id="specialtyDropdownContent">
+                        <div class="p-2">
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="cardiology" class="mr-2">
+                                <label for="cardiology" class="cursor-pointer">Cardiology</label>
+                            </div>
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="dermatology" class="mr-2">
+                                <label for="dermatology" class="cursor-pointer">Dermatology</label>
+                            </div>
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="neurology" class="mr-2">
+                                <label for="neurology" class="cursor-pointer">Neurology</label>
+                            </div>
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="pediatrics" class="mr-2">
+                                <label for="pediatrics" class="cursor-pointer">Pediatrics</label>
+                            </div>
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="psychiatry" class="mr-2">
+                                <label for="psychiatry" class="cursor-pointer">Psychiatry</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="w-full border border-gray-300 rounded-lg p-3 flex justify-between items-center cursor-pointer" id="languageDropdown">
+                        <span class="text-gray-700">Languages</span>
+                        <i class="ri-arrow-down-s-line text-gray-500"></i>
+                    </div>
+                    <div class="dropdown-content" id="languageDropdownContent">
+                        <div class="p-2">
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="english" class="mr-2">
+                                <label for="english" class="cursor-pointer">English</label>
+                            </div>
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="spanish" class="mr-2">
+                                <label for="spanish" class="cursor-pointer">Spanish</label>
+                            </div>
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="french" class="mr-2">
+                                <label for="french" class="cursor-pointer">French</label>
+                            </div>
+                            <div class="flex items-center p-2 hover:bg-gray-100 rounded">
+                                <input type="checkbox" id="mandarin" class="mr-2">
+                                <label for="mandarin" class="cursor-pointer">Mandarin</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between border border-gray-300 rounded-lg p-3">
+                    <span class="text-gray-700">Available Now</span>
+                    <label class="custom-switch">
+                        <input type="checkbox">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="border border-gray-300 rounded-lg p-3">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-700">Rating</span>
+                        <span class="text-sm text-primary">4.0+</span>
+                    </div>
+                    <input type="range" min="0" max="5" step="0.5" value="4" class="range-slider">
+                </div>
+            </div>
+            
+            <!-- Doctor Results -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="doctor-card border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-start">
+                            <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20middle-aged%20male%20doctor%20with%20glasses%20and%20a%20warm%20smile%2C%20wearing%20a%20white%20coat%20with%20stethoscope.%20He%20has%20short%20gray%20hair%20and%20looks%20trustworthy%20and%20experienced.%20The%20background%20is%20a%20soft%20blue%20gradient.%20The%20lighting%20is%20professional%20and%20flattering.&width=100&height=100&seq=2&orientation=squarish" alt="Dr. Robert Chen" class="w-16 h-16 rounded-full object-cover mr-4">
+                            <div>
+                                <div class="flex items-center">
+                                    <h4 class="text-lg font-semibold text-gray-800">Dr. Robert Chen</h4>
+                                    <div class="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Available</div>
+                                </div>
+                                <p class="text-primary font-medium">Cardiology</p>
+                                <div class="flex items-center mt-1">
+                                    <div class="flex">
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-half-fill text-yellow-400"></i>
+                                    </div>
+                                    <span class="ml-1 text-sm text-gray-600">4.8 (243 reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Heart Disease</span>
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Hypertension</span>
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Arrhythmia</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">English</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">Mandarin</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">Next available</p>
+                            <p class="font-medium text-gray-800">Today, 2:30 PM</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-white border border-primary text-primary px-3 py-2 rounded-button hover:bg-primary/5 whitespace-nowrap">
+                                Book
+                            </button>
+                            <button class="bg-primary text-white px-3 py-2 rounded-button hover:bg-primary/90 whitespace-nowrap">
+                                Consult Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doctor-card border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-start">
+                            <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20doctor%20in%20her%2040s%20with%20dark%20hair%20pulled%20back%2C%20wearing%20a%20white%20coat%20and%20stethoscope.%20She%20has%20a%20confident%2C%20approachable%20smile%20and%20is%20looking%20directly%20at%20camera.%20The%20background%20is%20a%20soft%20neutral%20tone.%20The%20lighting%20is%20professional%20and%20flattering.&width=100&height=100&seq=3&orientation=squarish" alt="Dr. Sarah Johnson" class="w-16 h-16 rounded-full object-cover mr-4">
+                            <div>
+                                <div class="flex items-center">
+                                    <h4 class="text-lg font-semibold text-gray-800">Dr. Sarah Johnson</h4>
+                                    <div class="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Available</div>
+                                </div>
+                                <p class="text-primary font-medium">Dermatology</p>
+                                <div class="flex items-center mt-1">
+                                    <div class="flex">
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                    </div>
+                                    <span class="ml-1 text-sm text-gray-600">5.0 (187 reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Acne</span>
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Eczema</span>
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Skin Cancer</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">English</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">Spanish</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">Next available</p>
+                            <p class="font-medium text-gray-800">Today, 1:15 PM</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-white border border-primary text-primary px-3 py-2 rounded-button hover:bg-primary/5 whitespace-nowrap">
+                                Book
+                            </button>
+                            <button class="bg-primary text-white px-3 py-2 rounded-button hover:bg-primary/90 whitespace-nowrap">
+                                Consult Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="doctor-card border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-start">
+                            <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20male%20doctor%20with%20dark%20skin%20and%20short%20black%20hair%2C%20wearing%20a%20white%20coat%20and%20stethoscope.%20He%20has%20a%20friendly%2C%20approachable%20smile%20and%20is%20looking%20directly%20at%20camera.%20The%20background%20is%20a%20soft%20blue%20gradient.%20The%20lighting%20is%20professional%20and%20flattering.&width=100&height=100&seq=4&orientation=squarish" alt="Dr. Michael Williams" class="w-16 h-16 rounded-full object-cover mr-4">
+                            <div>
+                                <div class="flex items-center">
+                                    <h4 class="text-lg font-semibold text-gray-800">Dr. Michael Williams</h4>
+                                    <div class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">In 15 min</div>
+                                </div>
+                                <p class="text-primary font-medium">Pediatrics</p>
+                                <div class="flex items-center mt-1">
+                                    <div class="flex">
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-fill text-yellow-400"></i>
+                                        <i class="ri-star-line text-yellow-400"></i>
+                                    </div>
+                                    <span class="ml-1 text-sm text-gray-600">4.2 (156 reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Child Development</span>
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Allergies</span>
+                                <span class="px-2 py-1 bg-blue-50 text-primary text-xs rounded-full">Asthma</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">English</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">French</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">Next available</p>
+                            <p class="font-medium text-gray-800">Today, 3:45 PM</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-white border border-primary text-primary px-3 py-2 rounded-button hover:bg-primary/5 whitespace-nowrap">
+                                Book
+                            </button>
+                            <button class="bg-primary text-white px-3 py-2 rounded-button hover:bg-primary/90 whitespace-nowrap">
+                                Consult Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button class="text-primary font-semibold hover:underline flex items-center mx-auto">
+                    View more doctors
+                    <i class="ri-arrow-right-line ml-1"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Appointment Management & Health Records -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Appointment Management -->
+            <section class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">My Appointments</h3>
+                    <button class="text-primary font-semibold hover:underline flex items-center">
+                        View all
+                        <i class="ri-arrow-right-line ml-1"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="appointment-card p-4 border border-gray-200 rounded-lg hover:border-primary transition-colors relative">
+                        <div class="flex justify-between">
+                            <div class="flex">
+                                <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20doctor%20in%20her%2040s%20with%20dark%20hair%20pulled%20back%2C%20wearing%20a%20white%20coat%20and%20stethoscope.%20She%20has%20a%20confident%2C%20approachable%20smile%20and%20is%20looking%20directly%20at%20camera.%20The%20background%20is%20a%20soft%20neutral%20tone.%20The%20lighting%20is%20professional%20and%20flattering.&width=60&height=60&seq=5&orientation=squarish" alt="Dr. Sarah Johnson" class="w-12 h-12 rounded-full object-cover mr-3">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Dr. Sarah Johnson</h4>
+                                    <p class="text-sm text-primary">Dermatology</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-gray-800">Today</p>
+                                <p class="text-sm text-gray-600">1:15 PM</p>
+                            </div>
+                        </div>
+                        <div class="appointment-actions absolute right-4 bottom-4 flex space-x-2">
+                            <button class="w-8 h-8 flex items-center justify-center bg-blue-50 text-primary rounded-full hover:bg-blue-100">
+                                <i class="ri-time-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-full hover:bg-red-100">
+                                <i class="ri-close-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center bg-green-50 text-green-600 rounded-full hover:bg-green-100">
+                                <i class="ri-video-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="appointment-card p-4 border border-gray-200 rounded-lg hover:border-primary transition-colors relative">
+                        <div class="flex justify-between">
+                            <div class="flex">
+                                <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20middle-aged%20male%20doctor%20with%20glasses%20and%20a%20warm%20smile%2C%20wearing%20a%20white%20coat%20with%20stethoscope.%20He%20has%20short%20gray%20hair%20and%20looks%20trustworthy%20and%20experienced.%20The%20background%20is%20a%20soft%20blue%20gradient.%20The%20lighting%20is%20professional%20and%20flattering.&width=60&height=60&seq=6&orientation=squarish" alt="Dr. Robert Chen" class="w-12 h-12 rounded-full object-cover mr-3">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Dr. Robert Chen</h4>
+                                    <p class="text-sm text-primary">Cardiology</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-gray-800">Tomorrow</p>
+                                <p class="text-sm text-gray-600">10:30 AM</p>
+                            </div>
+                        </div>
+                        <div class="appointment-actions absolute right-4 bottom-4 flex space-x-2">
+                            <button class="w-8 h-8 flex items-center justify-center bg-blue-50 text-primary rounded-full hover:bg-blue-100">
+                                <i class="ri-time-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-full hover:bg-red-100">
+                                <i class="ri-close-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center bg-green-50 text-green-600 rounded-full hover:bg-green-100">
+                                <i class="ri-video-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-700 mb-3">Schedule New Appointment</h4>
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">June 2025</span>
+                            <div class="flex space-x-2">
+                                <button class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                    <i class="ri-arrow-left-s-line"></i>
+                                </button>
+                                <button class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100">
+                                    <i class="ri-arrow-right-s-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                            <span class="text-xs text-gray-500">Su</span>
+                            <span class="text-xs text-gray-500">Mo</span>
+                            <span class="text-xs text-gray-500">Tu</span>
+                            <span class="text-xs text-gray-500">We</span>
+                            <span class="text-xs text-gray-500">Th</span>
+                            <span class="text-xs text-gray-500">Fr</span>
+                            <span class="text-xs text-gray-500">Sa</span>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1">
+                            <div class="calendar-day text-gray-400">1</div>
+                            <div class="calendar-day text-gray-400">2</div>
+                            <div class="calendar-day text-gray-400">3</div>
+                            <div class="calendar-day text-gray-400">4</div>
+                            <div class="calendar-day text-gray-400">5</div>
+                            <div class="calendar-day text-gray-400">6</div>
+                            <div class="calendar-day text-gray-400">7</div>
+                            <div class="calendar-day available">8</div>
+                            <div class="calendar-day selected">9</div>
+                            <div class="calendar-day available">10</div>
+                            <div class="calendar-day available">11</div>
+                            <div class="calendar-day">12</div>
+                            <div class="calendar-day">13</div>
+                            <div class="calendar-day">14</div>
+                            <div class="calendar-day">15</div>
+                            <div class="calendar-day">16</div>
+                            <div class="calendar-day">17</div>
+                            <div class="calendar-day">18</div>
+                            <div class="calendar-day">19</div>
+                            <div class="calendar-day">20</div>
+                            <div class="calendar-day">21</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h5 class="text-sm font-medium text-gray-700 mb-2">Available Time Slots</h5>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="time-slot">9:00 AM</div>
+                            <div class="time-slot selected">10:30 AM</div>
+                            <div class="time-slot">1:15 PM</div>
+                            <div class="time-slot">2:45 PM</div>
+                            <div class="time-slot">4:00 PM</div>
+                        </div>
+                    </div>
+                    
+                    <button class="mt-4 bg-primary text-white px-4 py-2 rounded-button font-semibold w-full hover:bg-primary/90 whitespace-nowrap">
+                        Confirm Appointment
+                    </button>
+                </div>
+            </section>
+            
+            <!-- Health Records -->
+            <section class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Health Records</h3>
+                    <button class="text-primary font-semibold hover:underline flex items-center">
+                        View all
+                        <i class="ri-arrow-right-line ml-1"></i>
+                    </button>
+                </div>
+                
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 mb-6 text-center">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-upload-cloud-line ri-2x text-primary"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-700 mb-2">Upload Medical Documents</h4>
+                    <p class="text-sm text-gray-500 mb-4">Drag and drop files here or click to browse</p>
+                    <button class="bg-white border border-primary text-primary px-4 py-2 rounded-button font-semibold hover:bg-primary/5 whitespace-nowrap">
+                        <i class="ri-upload-line mr-1"></i>
+                        Upload Files
+                    </button>
+                </div>
+                
+                <div class="space-y-3">
+                    <h4 class="font-semibold text-gray-700 mb-2">Recent Documents</h4>
+                    
+                    <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:border-primary transition-colors">
+                        <div class="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center mr-3">
+                            <i class="ri-file-pdf-line text-red-500"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h5 class="font-medium text-gray-800">Blood Test Results</h5>
+                            <p class="text-xs text-gray-500">PDF • 2.4 MB • Uploaded June 2, 2025</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary">
+                                <i class="ri-eye-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary">
+                                <i class="ri-download-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:border-primary transition-colors">
+                        <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
+                            <i class="ri-file-text-line text-primary"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h5 class="font-medium text-gray-800">Prescription - Dr. Johnson</h5>
+                            <p class="text-xs text-gray-500">DOC • 1.1 MB • Uploaded May 28, 2025</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary">
+                                <i class="ri-eye-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary">
+                                <i class="ri-download-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center p-3 border border-gray-200 rounded-lg hover:border-primary transition-colors">
+                        <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
+                            <i class="ri-image-line text-purple-500"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h5 class="font-medium text-gray-800">X-Ray Results</h5>
+                            <p class="text-xs text-gray-500">JPG • 3.7 MB • Uploaded May 15, 2025</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary">
+                                <i class="ri-eye-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary">
+                                <i class="ri-download-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-700 mb-3">Share with Doctor</h4>
+                    <div class="flex">
+                        <div class="relative flex-grow">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="ri-search-line text-gray-400"></i>
+                            </div>
+                            <input type="text" placeholder="Search doctor by name" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        </div>
+                        <button class="ml-2 bg-primary text-white px-4 py-2 rounded-button font-semibold hover:bg-primary/90 whitespace-nowrap">
+                            Share
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Multi-Doctor Opinions -->
+        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Second Opinions</h3>
+                <button class="text-primary font-semibold hover:underline flex items-center">
+                    View all cases
+                    <i class="ri-arrow-right-line ml-1"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-700 mb-3">Active Case: Lower Back Pain</h4>
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="ri-file-list-3-line text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-medium text-gray-800">Case Summary</h5>
+                            <p class="text-sm text-gray-600 mt-1">Persistent lower back pain for 3 months, worsening with physical activity. Previous treatments included physical therapy and over-the-counter pain medication with limited relief.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative mb-4">
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+                    <button class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-primary">
+                        <i class="ri-arrow-left-s-line ri-lg"></i>
+                    </button>
+                </div>
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 z-10">
+                    <button class="w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-primary">
+                        <i class="ri-arrow-right-s-line ri-lg"></i>
+                    </button>
+                </div>
+                
+                <div class="flex overflow-x-auto py-4 px-5 -mx-5 hide-scrollbar">
+                    <div class="min-w-[300px] max-w-[300px] border border-gray-200 rounded-lg p-4 mr-4">
+                        <div class="flex items-center mb-3">
+                            <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20middle-aged%20male%20doctor%20with%20glasses%20and%20a%20warm%20smile%2C%20wearing%20a%20white%20coat%20with%20stethoscope.%20He%20has%20short%20gray%20hair%20and%20looks%20trustworthy%20and%20experienced.%20The%20background%20is%20a%20soft%20blue%20gradient.%20The%20lighting%20is%20professional%20and%20flattering.&width=60&height=60&seq=7&orientation=squarish" alt="Dr. Robert Chen" class="w-12 h-12 rounded-full object-cover mr-3">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Dr. Robert Chen</h4>
+                                <p class="text-sm text-primary">Orthopedic Specialist</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Diagnosis</h5>
+                                <p class="text-sm text-gray-600">Lumbar muscle strain with possible mild disc herniation</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Recommended Treatment</h5>
+                                <p class="text-sm text-gray-600">Continued physical therapy with focus on core strengthening, prescription anti-inflammatory medication</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Additional Tests</h5>
+                                <p class="text-sm text-gray-600">MRI recommended to rule out disc issues</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between">
+                            <span class="text-sm text-gray-500">June 5, 2025</span>
+                            <button class="text-primary text-sm font-medium hover:underline">
+                                Full Report
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="min-w-[300px] max-w-[300px] border border-gray-200 rounded-lg p-4 mr-4 bg-blue-50 border-primary">
+                        <div class="flex items-center mb-3">
+                            <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20doctor%20in%20her%2050s%20with%20short%20blonde%20hair%2C%20wearing%20a%20white%20coat%20and%20stethoscope.%20She%20has%20a%20confident%2C%20approachable%20smile%20and%20is%20looking%20directly%20at%20camera.%20The%20background%20is%20a%20soft%20neutral%20tone.%20The%20lighting%20is%20professional%20and%20flattering.&width=60&height=60&seq=8&orientation=squarish" alt="Dr. Emily Wilson" class="w-12 h-12 rounded-full object-cover mr-3">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Dr. Emily Wilson</h4>
+                                <p class="text-sm text-primary">Pain Management Specialist</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Diagnosis</h5>
+                                <p class="text-sm text-gray-600">Chronic myofascial pain syndrome with possible sacroiliac joint dysfunction</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Recommended Treatment</h5>
+                                <p class="text-sm text-gray-600">Trigger point injections, specialized physical therapy, and short-term muscle relaxants</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Additional Tests</h5>
+                                <p class="text-sm text-gray-600">Dynamic movement assessment, SI joint evaluation</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between">
+                            <span class="text-sm text-gray-500">June 7, 2025</span>
+                            <button class="text-primary text-sm font-medium hover:underline">
+                                Full Report
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="min-w-[300px] max-w-[300px] border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center mb-3">
+                            <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20middle-aged%20male%20doctor%20with%20short%20brown%20hair%20and%20beard%2C%20wearing%20a%20white%20coat%20and%20stethoscope.%20He%20has%20a%20friendly%2C%20approachable%20smile%20and%20is%20looking%20directly%20at%20camera.%20The%20background%20is%20a%20soft%20blue%20gradient.%20The%20lighting%20is%20professional%20and%20flattering.&width=60&height=60&seq=9&orientation=squarish" alt="Dr. James Martinez" class="w-12 h-12 rounded-full object-cover mr-3">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Dr. James Martinez</h4>
+                                <p class="text-sm text-primary">Neurosurgeon</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Diagnosis</h5>
+                                <p class="text-sm text-gray-600">Pending review of additional imaging</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Recommended Treatment</h5>
+                                <p class="text-sm text-gray-600">Awaiting consultation - scheduled for June 10</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-medium text-gray-700">Additional Tests</h5>
+                                <p class="text-sm text-gray-600">Full spine MRI with contrast recommended</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between">
+                            <span class="text-sm text-gray-500">Pending</span>
+                            <button class="text-gray-400 text-sm font-medium cursor-not-allowed">
+                                Awaiting Review
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center mt-6">
+                <button class="bg-white border border-primary text-primary px-4 py-2 rounded-button font-semibold hover:bg-primary/5 mr-3 whitespace-nowrap">
+                    Request New Opinion
+                </button>
+                <button class="bg-primary text-white px-4 py-2 rounded-button font-semibold hover:bg-primary/90 whitespace-nowrap">
+                    Compare All Opinions
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h1 class="text-2xl font-['Pacifico'] text-white mb-4">logo</h1>
+                    <p class="text-gray-300 mb-4">Connecting patients with quality healthcare anytime, anywhere.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition-colors">
+                            <i class="ri-facebook-fill text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition-colors">
+                            <i class="ri-twitter-x-fill text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition-colors">
+                            <i class="ri-instagram-fill text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition-colors">
+                            <i class="ri-linkedin-fill text-white"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h5 class="font-semibold text-lg mb-4">Quick Links</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Find a Doctor</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Book Appointment</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Health Records</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Second Opinions</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Specialties</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h5 class="font-semibold text-lg mb-4">Support</h5>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">FAQs</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h5 class="font-semibold text-lg mb-4">Newsletter</h5>
+                    <p class="text-gray-300 mb-4">Subscribe to our newsletter for health tips and updates.</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email address" class="flex-grow px-4 py-2 rounded-l-lg border-none focus:outline-none text-gray-800">
+                        <button class="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-primary/90 whitespace-nowrap">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 mb-4 md:mb-0">© 2025 MediConnect. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <div class="flex items-center text-gray-400">
+                        <i class="ri-visa-fill ri-lg mr-2"></i>
+                        <i class="ri-mastercard-fill ri-lg mr-2"></i>
+                        <i class="ri-paypal-fill ri-lg mr-2"></i>
+                        <i class="ri-apple-fill ri-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="appointmentModal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Appointment Confirmation</h3>
+                <button class="text-gray-500 hover:text-gray-700" id="closeAppointmentModal">
+                    <i class="ri-close-line ri-lg"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <div class="flex items-center p-4 bg-blue-50 rounded-lg mb-4">
+                    <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20middle-aged%20male%20doctor%20with%20glasses%20and%20a%20warm%20smile%2C%20wearing%20a%20white%20coat%20with%20stethoscope.%20He%20has%20short%20gray%20hair%20and%20looks%20trustworthy%20and%20experienced.%20The%20background%20is%20a%20soft%20blue%20gradient.%20The%20lighting%20is%20professional%20and%20flattering.&width=60&height=60&seq=10&orientation=squarish" alt="Dr. Robert Chen" class="w-12 h-12 rounded-full object-cover mr-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Dr. Robert Chen</h4>
+                        <p class="text-sm text-primary">Cardiology</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Date</p>
+                        <p class="font-medium text-gray-800">June 9, 2025</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Time</p>
+                        <p class="font-medium text-gray-800">10:30 AM</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Duration</p>
+                        <p class="font-medium text-gray-800">30 minutes</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Type</p>
+                        <p class="font-medium text-gray-800">Video Consultation</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 mb-1">Reason for Visit</p>
+                    <textarea class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" rows="2" placeholder="Briefly describe your symptoms or reason for consultation"></textarea>
+                </div>
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 mb-2">Reminder Preferences</p>
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox" id="emailReminder" checked class="mr-2">
+                        <label for="emailReminder" class="text-gray-700">Email reminder (24 hours before)</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="smsReminder" checked class="mr-2">
+                        <label for="smsReminder" class="text-gray-700">SMS reminder (1 hour before)</label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-button font-semibold hover:bg-gray-50 whitespace-nowrap">
+                    Cancel
+                </button>
+                <button class="bg-primary text-white px-4 py-2 rounded-button font-semibold hover:bg-primary/90 whitespace-nowrap">
+                    Confirm Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="uploadModal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Upload Medical Documents</h3>
+                <button class="text-gray-500 hover:text-gray-700" id="closeUploadModal">
+                    <i class="ri-close-line ri-lg"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 mb-4 text-center">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-upload-cloud-line ri-2x text-primary"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-700 mb-2">Drag and drop files here</h4>
+                    <p class="text-sm text-gray-500 mb-4">or</p>
+                    <button class="bg-white border border-primary text-primary px-4 py-2 rounded-button font-semibold hover:bg-primary/5 whitespace-nowrap">
+                        Browse Files
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 mb-2">Document Type</p>
+                    <select class="w-full p-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none bg-white">
+                        <option>Select document type</option>
+                        <option>Lab Results</option>
+                        <option>Prescription</option>
+                        <option>Imaging (X-Ray, MRI, CT)</option>
+                        <option>Medical History</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 mb-2">Description (Optional)</p>
+                    <textarea class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" rows="2" placeholder="Add notes about this document"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-button font-semibold hover:bg-gray-50 whitespace-nowrap">
+                    Cancel
+                </button>
+                <button class="bg-primary text-white px-4 py-2 rounded-button font-semibold hover:bg-primary/90 whitespace-nowrap">
+                    Upload
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="videoCallModal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Preparing Video Consultation</h3>
+                <button class="text-gray-500 hover:text-gray-700" id="closeVideoCallModal">
+                    <i class="ri-close-line ri-lg"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <div class="bg-gray-100 rounded-lg aspect-video mb-4 flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+                        <i class="ri-user-line ri-2x text-gray-500"></i>
+                    </div>
+                    <p class="text-gray-500">Camera preview</p>
+                </div>
+                <div class="flex justify-center space-x-4 mb-4">
+                    <button class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-300">
+                        <i class="ri-mic-line ri-lg"></i>
+                    </button>
+                    <button class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-300">
+                        <i class="ri-camera-line ri-lg"></i>
+                    </button>
+                    <button class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600">
+                        <i class="ri-phone-off-line ri-lg"></i>
+                    </button>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-medium text-gray-800 mb-2">Before you begin:</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li class="flex items-start">
+                            <i class="ri-check-line text-green-500 mr-2 mt-0.5"></i>
+                            <span>Ensure you're in a quiet, well-lit area with stable internet connection</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="ri-check-line text-green-500 mr-2 mt-0.5"></i>
+                            <span>Have any relevant medical documents or notes ready to share</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="ri-check-line text-green-500 mr-2 mt-0.5"></i>
+                            <span>Write down any questions you want to ask the doctor</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button class="bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90 whitespace-nowrap">
+                    Join Consultation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Rate Your Experience</h3>
+                <button class="text-gray-500 hover:text-gray-700" id="closeFeedbackModal">
+                    <i class="ri-close-line ri-lg"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <div class="flex items-center p-4 bg-blue-50 rounded-lg mb-4">
+                    <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20female%20doctor%20in%20her%2040s%20with%20dark%20hair%20pulled%20back%2C%20wearing%20a%20white%20coat%20and%20stethoscope.%20She%20has%20a%20confident%2C%20approachable%20smile%20and%20is%20looking%20directly%20at%20camera.%20The%20background%20is%20a%20soft%20neutral%20tone.%20The%20lighting%20is%20professional%20and%20flattering.&width=60&height=60&seq=11&orientation=squarish" alt="Dr. Sarah Johnson" class="w-12 h-12 rounded-full object-cover mr-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">Dr. Sarah Johnson</h4>
+                        <p class="text-sm text-primary">Dermatology</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 mb-2">How would you rate your consultation?</p>
+                    <div class="flex justify-center space-x-2 mb-4">
+                        <span class="star" data-rating="1"><i class="ri-star-line ri-2x"></i></span>
+                        <span class="star" data-rating="2"><i class="ri-star-line ri-2x"></i></span>
+                        <span class="star" data-rating="3"><i class="ri-star-line ri-2x"></i></span>
+                        <span class="star" data-rating="4"><i class="ri-star-line ri-2x"></i></span>
+                        <span class="star" data-rating="5"><i class="ri-star-line ri-2x"></i></span>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 mb-2">What aspects were you satisfied with?</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="doctorKnowledge" class="mr-2">
+                            <label for="doctorKnowledge" class="text-gray-700">Doctor's knowledge</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="communication" class="mr-2">
+                            <label for="communication" class="text-gray-700">Communication</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="waitTime" class="mr-2">
+                            <label for="waitTime" class="text-gray-700">Wait time</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="videoQuality" class="mr-2">
+                            <label for="videoQuality" class="text-gray-700">Video/audio quality</label>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 mb-2">Additional comments</p>
+                    <textarea class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" rows="3" placeholder="Share your experience or suggestions for improvement"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button class="bg-primary text-white px-4 py-2 rounded-button font-semibold hover:bg-primary/90 whitespace-nowrap">
+                    Submit Feedback
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script id="dropdownScript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const specialtyDropdown = document.getElementById('specialtyDropdown');
+            const specialtyDropdownContent = document.getElementById('specialtyDropdownContent');
+            
+            const languageDropdown = document.getElementById('languageDropdown');
+            const languageDropdownContent = document.getElementById('languageDropdownContent');
+            
+            specialtyDropdown.addEventListener('click', function() {
+                specialtyDropdownContent.classList.toggle('show');
+                languageDropdownContent.classList.remove('show');
+            });
+            
+            languageDropdown.addEventListener('click', function() {
+                languageDropdownContent.classList.toggle('show');
+                specialtyDropdownContent.classList.remove('show');
+            });
+            
+            document.addEventListener('click', function(event) {
+                if (!specialtyDropdown.contains(event.target) && !specialtyDropdownContent.contains(event.target)) {
+                    specialtyDropdownContent.classList.remove('show');
+                }
+                
+                if (!languageDropdown.contains(event.target) && !languageDropdownContent.contains(event.target)) {
+                    languageDropdownContent.classList.remove('show');
+                }
+            });
+        });
+    </script>
+    <script id="calendarScript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarDays = document.querySelectorAll('.calendar-day');
+            const timeSlots = document.querySelectorAll('.time-slot');
+            
+            calendarDays.forEach(day => {
+                day.addEventListener('click', function() {
+                    calendarDays.forEach(d => d.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            timeSlots.forEach(slot => {
+                slot.addEventListener('click', function() {
+                    timeSlots.forEach(s => s.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        });
+    </script>
+
+    <script id="modalScript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Appointment Modal
+            const appointmentModal = document.getElementById('appointmentModal');
+            const closeAppointmentModal = document.getElementById('closeAppointmentModal');
+            
+            // Upload Modal
+            const uploadModal = document.getElementById('uploadModal');
+            const closeUploadModal = document.getElementById('closeUploadModal');
+            
+            // Video Call Modal
+            const videoCallModal = document.getElementById('videoCallModal');
+            const closeVideoCallModal = document.getElementById('closeVideoCallModal');
+            
+            // Feedback Modal
+            const feedbackModal = document.getElementById('feedbackModal');
+            const closeFeedbackModal = document.getElementById('closeFeedbackModal');
+            
+            // Close modals when clicking the close button
+            closeAppointmentModal.addEventListener('click', function() {
+                appointmentModal.classList.remove('show');
+            });
+            
+            closeUploadModal.addEventListener('click', function() {
+                uploadModal.classList.remove('show');
+            });
+            
+            closeVideoCallModal.addEventListener('click', function() {
+                videoCallModal.classList.remove('show');
+            });
+            
+            closeFeedbackModal.addEventListener('click', function() {
+                feedbackModal.classList.remove('show');
+            });
+            
+            // Close modals when clicking outside the modal content
+            window.addEventListener('click', function(event) {
+                if (event.target === appointmentModal) {
+                    appointmentModal.classList.remove('show');
+                }
+                if (event.target === uploadModal) {
+                    uploadModal.classList.remove('show');
+                }
+                if (event.target === videoCallModal) {
+                    videoCallModal.classList.remove('show');
+                }
+                if (event.target === feedbackModal) {
+                    feedbackModal.classList.remove('show');
+                }
+            });
+            
+            // For demo purposes, show appointment modal when clicking "Confirm Appointment" button
+            document.querySelector('button:contains("Confirm Appointment")').addEventListener('click', function() {
+                appointmentModal.classList.add('show');
+            });
+            
+            // Helper function for button text matching
+            Element.prototype.contains = function(text) {
+                return this.textContent.includes(text);
+            };
+        });
+    </script>
+
+    <script id="ratingScript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star');
+            
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    highlightStars(rating);
+                });
+                
+                star.addEventListener('mouseout', function() {
+                    resetStars();
+                    const selectedRating = document.querySelector('.star.selected');
+                    if (selectedRating) {
+                        const rating = parseInt(selectedRating.getAttribute('data-rating'));
+                        highlightStars(rating);
+                    }
+                });
+                
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    selectStar(rating);
+                });
+            });
+            
+            function highlightStars(rating) {
+                stars.forEach(star => {
+                    const starRating = parseInt(star.getAttribute('data-rating'));
+                    if (starRating <= rating) {
+                        star.querySelector('i').classList.remove('ri-star-line');
+                        star.querySelector('i').classList.add('ri-star-fill');
+                        star.classList.add('filled');
+                    } else {
+                        star.querySelector('i').classList.remove('ri-star-fill');
+                        star.querySelector('i').classList.add('ri-star-line');
+                        star.classList.remove('filled');
+                    }
+                });
+            }
+            
+            function resetStars() {
+                stars.forEach(star => {
+                    star.querySelector('i').classList.remove('ri-star-fill');
+                    star.querySelector('i').classList.add('ri-star-line');
+                    star.classList.remove('filled');
+                });
+            }
+            
+            function selectStar(rating) {
+                stars.forEach(star => {
+                    star.classList.remove('selected');
+                    const starRating = parseInt(star.getAttribute('data-rating'));
+                    if (starRating === rating) {
+                        star.classList.add('selected');
+                    }
+                });
+                highlightStars(rating);
+            }
+        });
+    </script>
+</body>
+</html>
