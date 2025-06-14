@@ -1,4 +1,4 @@
-package com.api.hub.http.handler;
+package com.api.hub.auth.handlers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,12 +9,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
-import com.api.hub.http.AutheticationHandler;
+import com.api.hub.auth.AutheticationHandler;
 
-@Component
+@Component("BearerAuthAutheticationHandler")
 @Scope(value = "prototype")
 public class BearerAuthAutheticationHandler implements AutheticationHandler{
-	// these classes are responsible to handle authentication information
+
 	private char[] auth;
 	
 	@Autowired
@@ -31,6 +31,4 @@ public class BearerAuthAutheticationHandler implements AutheticationHandler{
 		var.put(HttpHeaders.AUTHORIZATION, "Bearer " + auth.toString());
 		return var;
 	}
-
-	
 }

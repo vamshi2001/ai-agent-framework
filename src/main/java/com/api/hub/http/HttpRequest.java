@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.backoff.BackOff;
 
+import com.api.hub.auth.AutheticationHandler;
 import com.api.hub.http.url.HostReslover;
 
 import lombok.NonNull;

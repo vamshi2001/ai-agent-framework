@@ -1,4 +1,4 @@
-package com.api.hub.http;
+package com.api.hub.auth;
 
 import java.util.Map;
 
